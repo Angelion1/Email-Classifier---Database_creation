@@ -16,6 +16,7 @@ import email.util.Stemmer;
 public class emailApplication {
 	public static void main(String[] args) {
 
+/*
 		ArrayList<String> ar = new ArrayList<>();
 		String path = "D:/KmeansTrial";
 		File f = new File(path);
@@ -29,11 +30,8 @@ public class emailApplication {
 		KMeans km = new KMeans(2, 10, ar, path);
 		ArrayList<ArrayList<String>> clusters = km.getClusters();
 		
-/*	
-		EmailDao edao = new EmailDao();
-		Email e1 = new Email();
-		edao.insert(e1);
-			
+*/
+		
 		Extracter ext = new Extracter();
 		
 		//setting path to where the text files are which contain the mails 
@@ -53,14 +51,14 @@ public class emailApplication {
 			e.printStackTrace();
 		}
 
-		  char[] w = {'e', 'a', 't', 'i', 'n', 'g'};
+		  /*char[] w = {'e', 'a', 't', 'i', 'n', 'g'};
 	      Stemmer s = new Stemmer();
 	      for (int c = 0; c < 6; c++) s.add(w[c]);
 	      s.stem();
 	      String word = s.toString();
 	      System.out.println(word);
-	      	
-*/	      
+	      */	
+	      
 	        
 	           
 	     

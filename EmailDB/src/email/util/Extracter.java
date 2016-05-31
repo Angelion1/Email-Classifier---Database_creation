@@ -16,6 +16,12 @@ import email.bean.Email;
 //stopwords from the data to reduce its size
 public class Extracter {
 	
+	Stemmer stm;
+	
+	public Extracter() {
+		stm = new Stemmer();
+	}
+
 	//the function recursively searches for text files and
 	//then calls the extract function on each text file
 	public ArrayList<Email> extractAll(String path) throws IOException{
@@ -44,29 +50,38 @@ public class Extracter {
 	}
 	
 	//this function searches the file for the different fields of info
-	//and stores them in an Email object after removing stopwords
+	//and stores them in an Email object after removing stop-words
 	public Email extract(String path){
 		Email e1 = new Email();
 		e1.setBody("body");
 		e1.setFrom("from");
 		e1.setSub("sub");
 		e1.setTo("to");
+		boolean to = true, from = true, subject = true;
+		
 		try {
 			Scanner scan = new Scanner(new FileReader(path));
 			while(scan.hasNext()){
 				String token = scan.next();
-				if("To:".equals(token)){
-					e1.setTo(scan.next());
+				if("To:".equals(token) && to){
+					token = scan.next();
+					token = stem(token);
+					e1.setTo(token);
+					to = false;
 					continue;
 				}
-				else if("From:".equals(token)){
-					e1.setFrom(scan.next());
+				else if("From:".equals(token) && from){
+					token = scan.next();
+					token = stem(token);
+					e1.setFrom(token);
+					from = false;
 					continue;
 				}
-				else if("Subject:".equals(token)){
+				else if("Subject:".equals(token) && subject){
 					String s = scan.nextLine();
 					s = stopWordsRemover(s);
 					e1.setSub(s);
+					subject = false;
 				}
 			}
 			scan.close();
@@ -83,6 +98,7 @@ public class Extracter {
 					}
 					line = line.substring(0, line.length()-4);
 					line = stopWordsRemover(line);
+					line = stem(line);
 					e1.setBody(line);
 					line = null;
 				}
@@ -96,6 +112,31 @@ public class Extracter {
 		return e1;
 	}
 	
+	private String stem(String token) {
+		
+		ArrayList<String> result = new ArrayList<>();
+		String[] words = token.split("\\s+");
+		for (int i = 0; i < words.length; i++) {
+		    // You may want to check for a non-word character before blindly
+		    // performing a replacement
+		    // It may also be necessary to adjust the character class
+		    words[i] = words[i].replaceAll("[^\\w]", "");
+		}
+		for(int i=0;i<words.length;i++){
+			for (int c = 0; c < words[i].length(); c++) stm.add(words[i].charAt(c));
+			stm.stem();
+			result.add(stm.toString());
+			stm = new Stemmer();
+		}
+		
+		String resultString = "";
+		for(String word : result){
+			resultString+=word + " ";
+		}
+		
+		return resultString;
+	}
+
 	//the function removes stopwords from any string
 	//it uses a textfile which has a list of stopwords in english language
 	public String stopWordsRemover(String s){
